@@ -8,8 +8,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , m_parser(new XmlParser(this))
 {
+    this->setWindowIcon(QIcon(":/picture/book.jpeg"));
     setWindowTitle(u8"DBLP XML解析");
     setFixedSize(700, 500);
+
+    //通过样式表设置背景
+    this->setObjectName("WindowBg");
+    // 使用 border-image 可以让图片自动拉伸、缩放，完美铺满整个窗口
+    this->setStyleSheet("#WindowBg { border-image: url(:/picture/bg.png); }");
 
     QWidget* centralWidget = new QWidget(this);
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);

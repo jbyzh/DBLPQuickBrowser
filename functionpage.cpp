@@ -1,6 +1,6 @@
 #include "FunctionPage.h"
 #include <QDebug>
-#include "ui_functionpage.h" // 必须包含这个自动生成的头文件
+#include "ui_functionpage.h"
 #include "mainwindow.h"
 #include "precise.h"
 // 1. 修改构造函数初始化列表
@@ -11,9 +11,17 @@ FunctionPage::FunctionPage(QWidget *parent)
 
     ui->setupUi(this);
 
-
     setWindowTitle(u8"DBLP XML 功能菜单");
     setFixedSize(700, 500);
+
+    //通过样式表设置背景
+    this->setObjectName("WindowBg1");
+
+    // 强制激活 QWidget 的 QSS 背景绘制能力！
+    this->setAttribute(Qt::WA_StyledBackground, true);
+
+    // 使用 border-image 可以让图片自动拉伸、缩放，完美铺满整个窗口
+    this->setStyleSheet("#WindowBg1 { border-image: url(:/picture/bg.png); }");
 
     QPushButton *btn_back = new QPushButton(u8"⬅ 返回", this);
 
