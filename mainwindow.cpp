@@ -9,8 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_parser(new XmlParser(this))
 {
     setWindowTitle(u8"DBLP XML解析");
-    resize(1050,600);
-    //setFixedSize(700, 500);
+    setFixedSize(700, 500);
 
     QWidget* centralWidget = new QWidget(this);
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
@@ -18,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     QHBoxLayout* pathLayout = new QHBoxLayout();
     QLabel* pathLabel = new QLabel(u8"XML目录：", this);
     m_pathEdit = new QLineEdit(this);
-    m_pathEdit->setText("E:\\DBLPQuickBrowser\\dblp.xml\\");
+    m_pathEdit->setText("E:\\DBLP_Quick_Browser\\dblp.xml\\");
     QPushButton* selectBtn = new QPushButton(u8"选择目录", this);
     pathLayout->addWidget(pathLabel);
     pathLayout->addWidget(m_pathEdit);
@@ -37,9 +36,21 @@ MainWindow::MainWindow(QWidget *parent)
     threadLayout->addWidget(totalThreadEdit);
     threadLayout->addStretch();
 
+    // ================= 新增/修改：按钮布局 =================
+    QHBoxLayout* btnLayout = new QHBoxLayout();
+
     m_parseBtn = new QPushButton(u8"开始解析", this);
     m_parseBtn->setStyleSheet("font-size:14px; padding:10px; background-color:#409EFF; color:white; border:none; border-radius:4px;");
     m_parseBtn->setFixedHeight(40);
+
+    // 新增：“进入程序”按钮（换了个绿色主题区分一下）
+    QPushButton* m_enterBtn = new QPushButton(u8"进入程序", this);
+    m_enterBtn->setStyleSheet("font-size:14px; padding:10px; background-color:#67C23A; color:white; border:none; border-radius:4px;");
+    m_enterBtn->setFixedHeight(40);
+
+    btnLayout->addWidget(m_parseBtn);
+    btnLayout->addWidget(m_enterBtn); // 把两个按钮放在同一行
+    // =======================================================
 
     m_progressBar = new QProgressBar(this);
     m_progressBar->setRange(0, 0);
@@ -56,7 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainLayout->addLayout(pathLayout);
     mainLayout->addLayout(threadLayout);
-    mainLayout->addWidget(m_parseBtn);
+    mainLayout->addLayout(btnLayout); // 添加按钮布局
     mainLayout->addWidget(m_progressBar);
     mainLayout->addWidget(m_statusLabel);
     mainLayout->addWidget(logLabel);
@@ -69,40 +80,36 @@ MainWindow::MainWindow(QWidget *parent)
         this->show();
     });
 
-    connect(m_parser, &XmlParser::parseFinished, this, [=](bool success) {
-        m_parseBtn->setEnabled(true);
-        m_progressBar->hide();
-        if (success) {
-            QMessageBox::information(this, u8"测试", u8"解析完成，准备跳转！");
-            m_statusLabel->setText(u8"状态：解析成功");
-            m_logText->append(u8"[完成] 所有数据已写入database目录！");
+    // ================= 新增：“进入程序”按钮逻辑 =================
+    connect(m_enterBtn, &QPushButton::clicked, this, [=]() {
+        QString filePath = m_pathEdit->text().trimmed();
+        if (filePath.isEmpty()) {
+            QMessageBox::warning(this, u8"警告", u8"请确认XML文件路径！");
+            return;
+        }
+
+        // 1. 必须先将当前路径和参数传给 parser！
+        // 否则 parser 刚启动是空白状态，根本不知道去哪里检查是否已经解析过
+        bool maxOk, totalOk;
+        DWORD maxThread = maxThreadEdit->text().toUInt(&maxOk);
+        DWORD totalThread = totalThreadEdit->text().toUInt(&totalOk);
+        m_parser->setParams(maxThread, totalThread, true, filePath);
+
+        // 2. 告诉了 parser 路径之后，再去判断它底层的文件/数据库是否存在
+        if (m_parser->isFileParsed()) {
             this->hide();
             m_functionPage->show();
         } else {
-            m_statusLabel->setText(u8"状态：解析失败");
-            m_logText->append(u8"[错误] 解析过程中出现异常！");
-            QMessageBox::critical(this, u8"错误", u8"XML解析失败！请检查文件路径或线程参数。");
+            // 没解析过则弹窗提示
+            QMessageBox::warning(this, u8"提示", u8"首次使用请先进行解析！");
         }
     });
-
-    connect(selectBtn, &QPushButton::clicked, this, [=]() {
-        QString filePath = QFileDialog::getOpenFileName(this,
-                                                        u8"选择dblp.xml文件",
-                                                        m_pathEdit->text(),
-                                                        u8"XML文件 (*.xml)"
-                                                        );
-        if (!filePath.isEmpty()) {
-            m_pathEdit->setText(filePath);
-        }
-    });
+    // ============================================================
 
     connect(m_parseBtn, &QPushButton::clicked, this, [=]() {
         QString filePath = m_pathEdit->text().trimmed();
         if (filePath.isEmpty() || !QFile::exists(filePath)) {
-            QMessageBox::warning(this,
-                                 u8"警告",
-                                 u8"请选择有效的dblp.xml文件路径！"
-                                 );
+            QMessageBox::warning(this, u8"警告", u8"请选择有效的dblp.xml文件路径！");
             return;
         }
 
@@ -117,8 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
         m_parser->setParams(maxThread, totalThread, true, filePath);
 
         if (m_parser->isFileParsed()) {
-            QMessageBox::information(this, u8"测试", u8"文件已解析，准备跳转！");
-
+            QMessageBox::information(this, u8"提示", u8"文件已解析，准备跳转！");
             m_logText->append(u8"[提示] 文件已解析，即将进入功能菜单...");
             m_statusLabel->setText(u8"状态：文件已解析");
 
@@ -136,24 +142,31 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_parser, &XmlParser::parseStarted, this, [=]() {
         m_parseBtn->setEnabled(false);
+        m_enterBtn->setEnabled(false); // 解析时为了安全，禁用进入按钮
         m_progressBar->show();
         m_statusLabel->setText(u8"状态：解析中...");
         m_logText->append(u8"[开始] 解析线程已启动，正在读取XML文件...");
     });
 
+    // ================= 修改：合并后的 parseFinished 逻辑 =================
     connect(m_parser, &XmlParser::parseFinished, this, [=](bool success) {
         m_parseBtn->setEnabled(true);
+        m_enterBtn->setEnabled(true); // 解析完成恢复进入按钮
         m_progressBar->hide();
+
         if (success) {
             m_statusLabel->setText(u8"状态：解析成功");
             m_logText->append(u8"[完成] 所有数据已写入database目录！");
+            QMessageBox::information(this, u8"提示", u8"解析完成，准备跳转！");
+            this->hide();
+            m_functionPage->show();
         } else {
             m_statusLabel->setText(u8"状态：解析失败");
             m_logText->append(u8"[错误] 解析过程中出现异常！");
             QMessageBox::critical(this, u8"错误", u8"XML解析失败！请检查文件路径或线程参数。");
         }
     });
-
+    // =====================================================================
 }
 
 MainWindow::~MainWindow()
