@@ -1,0 +1,16 @@
+#pragma once
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <thread>
+#include <windows.h>
+#include <algorithm>
+#include <atomic>
+#include <sstream>
+#include <direct.h>
+#include <share.h>
+#include <cwchar>
+#include <locale>
+#include <codecvt>
+#include <mutex>
