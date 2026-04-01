@@ -13,7 +13,8 @@ SOURCES += \
     XmlParser.cpp \
     functionpage.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    precise.cpp
 
 HEADERS += \
     Data_initial.h \
@@ -21,11 +22,13 @@ HEADERS += \
     User_Define_Using.h \
     XmlParser.h \
     functionpage.h \
-    mainwindow.h
+    mainwindow.h \
+    precise.h
 
 FORMS += \
     functionpage.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    precise.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

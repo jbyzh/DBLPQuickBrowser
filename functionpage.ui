@@ -111,8 +111,40 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>关键词模糊搜索</string>
         </property>
        </widget>
       </item>
@@ -124,8 +156,85 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>年度学术热点</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>75</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
+        <property name="text">
+         <string>待完成</string>
         </property>
        </widget>
       </item>
@@ -161,6 +270,67 @@ color: #333333;</string>
         </property>
        </spacer>
       </item>
+      <item row="5" column="0">
+       <spacer name="verticalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Orientation::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Policy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="6" column="0">
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>75</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
+        <property name="text">
+         <string>待完成</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="pushButton">
         <property name="minimumSize">
@@ -169,8 +339,40 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>精准文献检索</string>
         </property>
        </widget>
       </item>
@@ -182,8 +384,40 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>合作关系网络</string>
         </property>
        </widget>
       </item>
@@ -195,8 +429,40 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>高产作者Top100</string>
         </property>
        </widget>
       </item>
@@ -208,8 +474,40 @@ color: #333333;</string>
           <height>75</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">/* --- 按钮正常状态 --- */
+QPushButton {
+    /* rgba 的前三个数字 255, 255, 255 代表纯白色 */
+    /* 最后一个数字 0.7 是透明度（取值 0 到 1），0.7 表示 70% 的不透明度 */
+    background-color: rgba(255, 255, 255, 0.7); 
+    
+    /* 换成楷体 */
+    font-family: &quot;楷体&quot;, &quot;KaiTi&quot;; 
+    font-size: 16px;              /* 字体稍微调大一点更有书法感 */
+    font-weight: bold;            /* 加粗一点，让楷体更清晰 */
+    color: #333333;               /* 深灰色文字，比纯黑更柔和 */
+    
+    /* 边框和圆角修饰 */
+    border: 1px solid rgba(200, 200, 200, 0.5); /* 半透明的灰色边框 */
+    border-radius: 8px;           /* 圆角 */
+}
+
+/* --- 鼠标悬停在按钮上的状态 --- */
+QPushButton:hover {
+    /* 鼠标放上去时，透明度变低（变成 0.9），感觉按钮“亮”起来了 */
+    background-color: rgba(255, 255, 255, 0.9); 
+    border: 1px solid #409eff;    /* 边框变成主题蓝 */
+    color: #409eff;               /* 字体也变蓝 */
+}
+
+/* --- 鼠标按下按钮时的状态 --- */
+QPushButton:pressed {
+    /* 按下时背景稍微变暗变灰一点 */
+    background-color: rgba(230, 230, 230, 0.8); 
+}</string>
+        </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>合作聚团分析</string>
         </property>
        </widget>
       </item>
