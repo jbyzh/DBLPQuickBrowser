@@ -12,7 +12,7 @@ FunctionPage::FunctionPage(QWidget *parent)
 
     // 设置窗口基本属性
     setWindowTitle(u8"DBLP XML 功能菜单");
-    setFixedSize(1050, 600);
+    setFixedSize(700, 500);
 
     // 3. 重新连接信号槽 (注意：现在要通过 ui-> 来找控件)
     // 假设你在 .ui 设计器里给按钮起的 objectName 分别是 authorBtn, yearBtn 等
