@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
 
     QHBoxLayout* pathLayout = new QHBoxLayout();
-    QLabel* pathLabel = new QLabel(u8"XML目录：", this);
+    QLabel* pathLabel = new QLabel(u8"XML目录（无需文件名）：", this);
     m_pathEdit = new QLineEdit(this);
     m_pathEdit->setText("E:\\DBLP_Quick_Browser\\dblp.xml\\");
     QPushButton* selectBtn = new QPushButton(u8"选择目录", this);
