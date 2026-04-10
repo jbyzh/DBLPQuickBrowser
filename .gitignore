@@ -52,3 +52,9 @@ compile_commands.json
 *creator.user*
 
 *_qmlcache.qrc
+
+# 补充：忽略纯 build 目录及其他常见输出目录
+build/
+bin/
+release/
+debug/
