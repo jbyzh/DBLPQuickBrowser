@@ -86,6 +86,18 @@ MainWindow::MainWindow(QWidget *parent)
         this->show();
     });
 
+    // 目录选择
+    connect(selectBtn, &QPushButton::clicked, this, [=]() {
+        QString filePath = QFileDialog::getOpenFileName(this,
+                                                        QString(u8"选择dblp.xml文件"),
+                                                        m_pathEdit->text(),
+                                                        QString(u8"XML文件 (*.xml)")
+                                                        );
+        if (!filePath.isEmpty()) {
+            m_pathEdit->setText(filePath);
+        }
+    });
+
     // ================= 新增：“进入程序”按钮逻辑 =================
     connect(m_enterBtn, &QPushButton::clicked, this, [=]() {
         QString filePath = m_pathEdit->text().trimmed();
