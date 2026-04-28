@@ -112,7 +112,7 @@ inline void Create_article(string name, DWORD flag, vector<string>& author, DWOR
     push_year(name, years);
     // 修复原push_author参数错误（原代码传author向量，现按Hash后值传）
     for (auto& a : author) {
-        push_author(name + "$" + to_string(flag), Hash4(a));
+        push_author(name + "$" + to_string(flag) + "#" + a, Hash4(a));
     }
     author.clear();
     total_num++;

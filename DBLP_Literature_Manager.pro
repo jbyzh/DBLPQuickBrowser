@@ -9,6 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    analytics.cpp \
+    analyticswindow.cpp \
     Data_initial.cpp \
     XmlParser.cpp \
     functionpage.cpp \
@@ -17,6 +19,8 @@ SOURCES += \
     precise.cpp
 
 HEADERS += \
+    analytics.h \
+    analyticswindow.h \
     Data_initial.h \
     Universal_headers.h \
     User_Define_Using.h \
