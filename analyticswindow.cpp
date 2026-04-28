@@ -264,13 +264,13 @@ void AnalyticsWindow::buildUi()
         "QPushButton{background:#409EFF; color:white; border:none; border-radius:5px; padding:8px 14px; font:12px 'Microsoft YaHei';}"
         "QPushButton:hover{background:#66B1FF;}"
         "QHeaderView::section{background:#F2F6FC; padding:6px; border:none; border-bottom:1px solid #EBEEF5;}"
-    );
+        );
 
     QVBoxLayout* root = new QVBoxLayout(this);
     root->setContentsMargins(18, 18, 18, 18);
     root->setSpacing(12);
 
-    QLabel* titleLabel = new QLabel(QString::fromUtf8("DBLP 作者统计 / 年度热点分析"));
+    QLabel* titleLabel = new QLabel(QString::fromUtf8("作者统计 / 年度热点分析"));
     titleLabel->setStyleSheet("font:700 22px 'Microsoft YaHei'; color:#303133; background:transparent;");
 
     m_tabs = new QTabWidget(this);
@@ -430,7 +430,8 @@ void AnalyticsWindow::populateYearList()
     const int latestYear = years.last();
     const int preferredLatestYear = std::min(2026, latestYear);
     const int recentThreshold = preferredLatestYear - 4;
-    for (const int year : years) {
+    for (auto it = years.crbegin(); it != years.crend(); ++it) {
+        const int year = *it;
         m_yearCombo->addItem(QString::number(year), year);
         QListWidgetItem* item = new QListWidgetItem(QString::number(year), m_yearList);
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
