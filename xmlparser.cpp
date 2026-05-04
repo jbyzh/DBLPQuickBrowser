@@ -4,8 +4,11 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMetaObject>
+#include <QSettings>
 #include <QTimer>
 #include <iostream>
+
+#include "GraphManager.h"
 
 using namespace data_initial;
 
@@ -56,6 +59,7 @@ void XmlParser::startParse()
     emit parseMessage(QString::fromUtf8("开始解析 dblp.xml..."));
     emit parseProgress(QString::fromUtf8("初始化解析线程..."));
     m_lastProgressValue = -1;
+    GraphManager::instance().clear();
 
     const QString baseDir = normalizedBaseDir();
     if (!m_progressTimer) {
@@ -93,6 +97,10 @@ void XmlParser::startParse()
             emit parseFinished(result);
 
             if (result) {
+                const QString graphPath = QDir(baseDir).filePath("database/graph");
+                GraphManager::instance().saveToFile(graphPath.toLocal8Bit().toStdString());
+                QSettings settings("DBLPQuickBrowser", "Settings");
+                settings.setValue("databasePath", baseDir);
                 emit parseMessage(QString::fromUtf8("解析成功，结果已保存到：") + QDir(baseDir).filePath("database"));
             } else {
                 emit parseMessage(QString::fromUtf8("解析失败。"));

@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <QListWidgetItem>
 #include <QMessageBox>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QMetaObject>
@@ -149,6 +150,17 @@ void TrendChartWidget::setData(const QMap<QString, QVector<QPair<int, int>>>& da
     update();
 }
 
+QMap<QString, QVector<QPair<int, int>>> TrendChartWidget::data() const
+{
+    return m_data;
+}
+
+void TrendChartWidget::setZoomHintVisible(bool visible)
+{
+    m_showZoomHint = visible;
+    update();
+}
+
 void TrendChartWidget::paintEvent(QPaintEvent* event)
 {
     QWidget::paintEvent(event);
@@ -167,6 +179,13 @@ void TrendChartWidget::paintEvent(QPaintEvent* event)
     painter.drawText(QRect(drawRect.left(), drawRect.top(), drawRect.width(), 24),
                      Qt::AlignLeft | Qt::AlignVCenter, QString::fromUtf8("多年热点趋势对比"));
 
+    if (m_showZoomHint) {
+        painter.setPen(QColor("#7F8C8D"));
+        painter.setFont(QFont("Microsoft YaHei", 8));
+        painter.drawText(QRect(drawRect.left(), drawRect.top() + 20, drawRect.width() - 8, 16),
+                         Qt::AlignRight | Qt::AlignVCenter, QString::fromUtf8("单击图表可放大"));
+    }
+
     if (m_data.isEmpty()) {
         painter.setFont(QFont("Microsoft YaHei", 10));
         painter.setPen(QColor("#909399"));
@@ -174,9 +193,10 @@ void TrendChartWidget::paintEvent(QPaintEvent* event)
         return;
     }
 
-    QRect chartRect = drawRect.adjusted(0, 40, 0, 0);
+    const int legendWidth = 156;
+    QRect chartRect = drawRect.adjusted(0, 40, -legendWidth, 0);
     const int left = chartRect.left() + 52;
-    const int right = chartRect.right() - 16;
+    const int right = chartRect.right() - 12;
     const int top = chartRect.top() + 8;
     const int bottom = chartRect.bottom() - 40;
 
@@ -211,7 +231,13 @@ void TrendChartWidget::paintEvent(QPaintEvent* event)
         painter.drawText(QRectF(x - 28, bottom + 8, 56, 16), Qt::AlignCenter, QString::number(years[i]));
     }
 
+    painter.setPen(QPen(QColor("#EEF1F6"), 1));
+    painter.setBrush(QColor(255, 255, 255, 150));
+    QRect legendRect(drawRect.right() - legendWidth + 8, drawRect.top() + 34, legendWidth - 12, drawRect.height() - 42);
+    painter.drawRoundedRect(legendRect, 8, 8);
+
     int colorIndex = 0;
+    const int legendRowHeight = 22;
     for (auto it = m_data.cbegin(); it != m_data.cend(); ++it, ++colorIndex) {
         const QColor color = colorFromIndex(colorIndex);
         QPainterPath path;
@@ -236,9 +262,35 @@ void TrendChartWidget::paintEvent(QPaintEvent* event)
         painter.setBrush(Qt::NoBrush);
         painter.setPen(QPen(color, 2));
         painter.drawPath(path);
-        painter.drawText(QRect(drawRect.right() - 150, drawRect.top() + colorIndex * 18, 140, 16),
-                         Qt::AlignRight | Qt::AlignVCenter, it.key());
+
+        const int legendY = legendRect.top() + 10 + colorIndex * legendRowHeight;
+        if (legendY + legendRowHeight > legendRect.bottom()) {
+            continue;
+        }
+
+        painter.setPen(QPen(color, 2));
+        painter.drawLine(legendRect.left() + 10, legendY + 8, legendRect.left() + 28, legendY + 8);
+        painter.setBrush(color);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(QPointF(legendRect.left() + 19, legendY + 8), 3, 3);
+
+        painter.setPen(QColor("#303133"));
+        painter.setFont(QFont("Microsoft YaHei", 8));
+        QFontMetrics legendMetrics(painter.font());
+        const QString legendText = legendMetrics.elidedText(it.key(), Qt::ElideRight, legendRect.width() - 40);
+        painter.drawText(QRect(legendRect.left() + 34, legendY, legendRect.width() - 38, 16),
+                         Qt::AlignLeft | Qt::AlignVCenter, legendText);
     }
+}
+
+void TrendChartWidget::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton && !m_data.isEmpty()) {
+        emit chartClicked();
+        event->accept();
+        return;
+    }
+    QWidget::mousePressEvent(event);
 }
 
 AnalyticsWindow::AnalyticsWindow(const QString& xmlPath, QWidget* parent)
@@ -404,6 +456,7 @@ void AnalyticsWindow::buildUi()
     connect(m_authorSearchEdit, &QLineEdit::returnPressed, this, &AnalyticsWindow::applyAuthorFilter);
     connect(yearButton, &QPushButton::clicked, this, &AnalyticsWindow::refreshHotKeywords);
     connect(compareButton, &QPushButton::clicked, this, &AnalyticsWindow::refreshTrends);
+    connect(m_trendChart, &TrendChartWidget::chartClicked, this, &AnalyticsWindow::showExpandedTrendChart);
 }
 
 bool AnalyticsWindow::initializeData()
@@ -579,4 +632,39 @@ void AnalyticsWindow::resizeEvent(QResizeEvent* event)
     if (m_loadingOverlay && m_loadingOverlay->isVisible()) {
         m_loadingOverlay->setGeometry(rect().adjusted(18, 62, -18, -18));
     }
+}
+
+void AnalyticsWindow::showExpandedTrendChart()
+{
+    if (!m_trendChart || m_trendChart->data().isEmpty()) {
+        return;
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(QString::fromUtf8("多年热点趋势对比"));
+    dialog.setWindowIcon(QIcon(":/picture/book.jpeg"));
+    dialog.setMinimumSize(980, 640);
+    dialog.setAttribute(Qt::WA_StyledBackground, true);
+    dialog.setObjectName("ExpandedChartDialog");
+    dialog.setStyleSheet(
+        "#ExpandedChartDialog{border-image:url(:/picture/bg.png);}"
+        "QDialog{background:transparent;}"
+        "QLabel{color:#1F2D3D; background:transparent;}"
+    );
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(18, 18, 18, 18);
+    layout->setSpacing(12);
+
+    QLabel* titleLabel = new QLabel(QString::fromUtf8("多年热点趋势对比"), &dialog);
+    titleLabel->setStyleSheet("font:700 22px 'Microsoft YaHei'; padding:8px 4px;");
+    layout->addWidget(titleLabel);
+
+    TrendChartWidget* expandedChart = new TrendChartWidget(&dialog);
+    expandedChart->setMinimumHeight(520);
+    expandedChart->setZoomHintVisible(false);
+    expandedChart->setData(m_trendChart->data());
+    layout->addWidget(expandedChart, 1);
+
+    dialog.exec();
 }

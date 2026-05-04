@@ -37,12 +37,19 @@ class TrendChartWidget : public QWidget
 public:
     explicit TrendChartWidget(QWidget* parent = nullptr);
     void setData(const QMap<QString, QVector<QPair<int, int>>>& data);
+    QMap<QString, QVector<QPair<int, int>>> data() const;
+    void setZoomHintVisible(bool visible);
+
+signals:
+    void chartClicked();
 
 protected:
     void paintEvent(QPaintEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
     QMap<QString, QVector<QPair<int, int>>> m_data;
+    bool m_showZoomHint = true;
 };
 
 class AnalyticsWindow : public QDialog
@@ -69,6 +76,7 @@ private:
     void populateAuthorTable(const QVector<AuthorStat>& authors);
     void populateKeywordTable(const QVector<KeywordStat>& keywords);
     void populateYearList();
+    void showExpandedTrendChart();
 
     AnalyticsService m_service;
     QTabWidget* m_tabs = nullptr;

@@ -6,6 +6,7 @@
 #include <QWidget>
 
 class AnalyticsWindow;
+class Clique;
 class IntervalWindow;
 
 QT_BEGIN_NAMESPACE
@@ -31,10 +32,12 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButton_3_clicked();
     void on_pushButton_5_clicked();
+    void on_pushButton_6_clicked();
 
 private:
     Ui::FunctionPage *ui;
     QPointer<AnalyticsWindow> m_analyticsWindow;
+    QPointer<Clique> m_cliqueWindow;
     QPointer<IntervalWindow> m_intervalWindow;
     QString m_dataPath;
 };

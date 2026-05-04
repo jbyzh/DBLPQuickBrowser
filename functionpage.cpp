@@ -4,6 +4,7 @@
 #include <QPushButton>
 
 #include "analyticswindow.h"
+#include "clique.h"
 #include "intervalwindow.h"
 #include "precise.h"
 #include "ui_functionpage.h"
@@ -15,6 +16,7 @@ FunctionPage::FunctionPage(QWidget *parent)
     ui->setupUi(this);
     ui->pushButton_3->setText(QString::fromUtf8("高产作者Top100 / 年度学术热点"));
     ui->pushButton_5->setText(QString::fromUtf8("时间区间分析"));
+    ui->pushButton_6->setText(QString::fromUtf8("合作聚团分析"));
     setWindowIcon(QIcon(":/picture/book.jpeg"));
     setWindowTitle(QString::fromUtf8("DBLP XML 功能菜单"));
     setFixedSize(700, 500);
@@ -92,4 +94,17 @@ void FunctionPage::on_pushButton_5_clicked()
     }
     m_intervalWindow = new IntervalWindow(m_dataPath, this);
     m_intervalWindow->show();
+}
+
+void FunctionPage::on_pushButton_6_clicked()
+{
+    if (m_dataPath.isEmpty()) {
+        QMessageBox::warning(this, QString::fromUtf8("提示"), QString::fromUtf8("请先在首页选择并解析 dblp.xml。"));
+        return;
+    }
+    if (m_cliqueWindow) {
+        m_cliqueWindow->close();
+    }
+    m_cliqueWindow = new Clique(this);
+    m_cliqueWindow->show();
 }
