@@ -6,8 +6,10 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QPointer>
 #include <QTabWidget>
 #include <QTableWidget>
+#include <QThread>
 #include <QWidget>
 
 #include "analytics.h"
@@ -51,6 +53,9 @@ public:
     explicit AnalyticsWindow(const QString& xmlPath, QWidget* parent = nullptr);
     void setInitialTab(int index);
 
+protected:
+    void resizeEvent(QResizeEvent* event) override;
+
 private slots:
     void applyAuthorFilter();
     void refreshHotKeywords();
@@ -59,6 +64,8 @@ private slots:
 private:
     void buildUi();
     bool initializeData();
+    void initializeDataAsync();
+    void setLoadingState(bool loading, const QString& message = QString());
     void populateAuthorTable(const QVector<AuthorStat>& authors);
     void populateKeywordTable(const QVector<KeywordStat>& keywords);
     void populateYearList();
@@ -77,6 +84,9 @@ private:
     QListWidget* m_yearList = nullptr;
     BarChartWidget* m_keywordBarChart = nullptr;
     TrendChartWidget* m_trendChart = nullptr;
+    QWidget* m_loadingOverlay = nullptr;
+    QLabel* m_loadingLabel = nullptr;
+    QPointer<QThread> m_initThread;
 };
 
 #endif

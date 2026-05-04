@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>680</width>
-    <height>407</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -189,7 +189,7 @@ QPushButton:pressed {
 }</string>
         </property>
         <property name="text">
-         <string>年度学术热点</string>
+         <string>时间区间分析</string>
         </property>
        </widget>
       </item>
@@ -462,7 +462,7 @@ QPushButton:pressed {
 }</string>
         </property>
         <property name="text">
-         <string>高产作者Top100</string>
+         <string>高产作者Top100/年度学术热点</string>
         </property>
        </widget>
       </item>

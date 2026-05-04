@@ -10,10 +10,12 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
+#include <QMetaObject>
 #include <QPushButton>
 #include <QSet>
 #include <QSplitter>
 #include <QTableWidgetItem>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace {
@@ -55,7 +57,8 @@ BarChartWidget::BarChartWidget(QWidget* parent)
     : QWidget(parent)
 {
     setMinimumHeight(260);
-    setAutoFillBackground(true);
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("background: transparent;");
 }
 
 void BarChartWidget::setData(const QVector<QPair<QString, int>>& data, const QString& title)
@@ -71,7 +74,11 @@ void BarChartWidget::paintEvent(QPaintEvent* event)
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(rect(), QColor(255, 255, 255, 245));
+    QPainterPath bgPath;
+    bgPath.addRoundedRect(rect().adjusted(1, 1, -1, -1), 10, 10);
+    painter.fillPath(bgPath, QColor(255, 255, 255, 210));
+    painter.setPen(QPen(QColor(255, 255, 255, 120), 1));
+    painter.drawPath(bgPath);
 
     QRect drawRect = rect().adjusted(16, 16, -16, -24);
     painter.setPen(QColor("#1F2D3D"));
@@ -132,7 +139,8 @@ TrendChartWidget::TrendChartWidget(QWidget* parent)
     : QWidget(parent)
 {
     setMinimumHeight(280);
-    setAutoFillBackground(true);
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("background: transparent;");
 }
 
 void TrendChartWidget::setData(const QMap<QString, QVector<QPair<int, int>>>& data)
@@ -147,7 +155,11 @@ void TrendChartWidget::paintEvent(QPaintEvent* event)
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.fillRect(rect(), QColor(255, 255, 255, 245));
+    QPainterPath bgPath;
+    bgPath.addRoundedRect(rect().adjusted(1, 1, -1, -1), 10, 10);
+    painter.fillPath(bgPath, QColor(255, 255, 255, 210));
+    painter.setPen(QPen(QColor(255, 255, 255, 120), 1));
+    painter.drawPath(bgPath);
 
     QRect drawRect = rect().adjusted(16, 16, -16, -20);
     painter.setPen(QColor("#1F2D3D"));
@@ -234,7 +246,10 @@ AnalyticsWindow::AnalyticsWindow(const QString& xmlPath, QWidget* parent)
     , m_service(xmlPath)
 {
     buildUi();
-    initializeData();
+    setLoadingState(true, QString::fromUtf8("正在加载作者统计与热点分析..."));
+    QTimer::singleShot(0, this, [this]() {
+        initializeDataAsync();
+    });
 }
 
 void AnalyticsWindow::setInitialTab(int index)
@@ -254,16 +269,22 @@ void AnalyticsWindow::buildUi()
     setObjectName("WindowBg");
     setStyleSheet(
         "#WindowBg{border-image:url(:/picture/bg.png);}"
-        "QTabWidget::pane{border:1px solid rgba(220,223,230,0.9); background-color:rgba(255,255,255,0.82); top:-1px;}"
-        "QTabBar::tab{background-color:rgba(255,255,255,0.72); color:#303133; padding:8px 18px; border:1px solid rgba(220,223,230,0.9); border-bottom:none; min-width:96px;}"
-        "QTabBar::tab:selected{background-color:rgba(255,255,255,0.92); color:#409EFF;}"
+        "QDialog{background:transparent;}"
+        "QLabel#AnalyticsTitle{font:700 24px 'Microsoft YaHei'; color:#1F2D3D; background:transparent; padding:10px 4px;}"
+        "QTabWidget::pane{border:1px solid rgba(255,255,255,0.38); background-color:rgba(255,255,255,0.52); top:-1px; border-radius:10px;}"
+        "QTabBar::tab{background-color:rgba(255,255,255,0.45); color:#303133; padding:9px 18px; border:1px solid rgba(255,255,255,0.35); border-bottom:none; min-width:112px; border-top-left-radius:8px; border-top-right-radius:8px;}"
+        "QTabBar::tab:selected{background-color:rgba(255,255,255,0.82); color:#409EFF;}"
         "QTabBar::tab:!selected{margin-top:2px;}"
-        "QGroupBox{font:600 13px 'Microsoft YaHei'; border:1px solid #DCDFE6; border-radius:6px; margin-top:12px; background-color:rgba(255,255,255,0.88);}"
+        "QGroupBox{font:600 13px 'Microsoft YaHei'; border:1px solid rgba(255,255,255,0.45); border-radius:8px; margin-top:12px; background-color:rgba(255,255,255,0.58);}"
         "QGroupBox::title{subcontrol-origin: margin; left:12px; padding:0 4px;}"
-        "QLineEdit,QComboBox,QTableWidget,QListWidget{font:12px 'Microsoft YaHei'; background-color:rgba(255,255,255,0.94);}"
-        "QPushButton{background:#409EFF; color:white; border:none; border-radius:5px; padding:8px 14px; font:12px 'Microsoft YaHei';}"
+        "QLineEdit,QComboBox{font:12px 'Microsoft YaHei'; background-color:rgba(255,255,255,0.86); border:1px solid rgba(64,158,255,0.18); border-radius:6px; padding:6px 8px;}"
+        "QTableWidget,QListWidget{font:12px 'Microsoft YaHei'; background-color:rgba(255,255,255,0.72); alternate-background-color:rgba(247,249,252,0.7); border:1px solid rgba(255,255,255,0.35); border-radius:8px;}"
+        "QTableWidget{gridline-color:rgba(228,231,237,0.65); selection-background-color:rgba(64,158,255,0.18); selection-color:#1F2D3D;}"
+        "QListWidget::item{padding:4px 6px; border-radius:4px;}"
+        "QListWidget::item:selected{background-color:rgba(64,158,255,0.14); color:#1F2D3D;}"
+        "QPushButton{background:#409EFF; color:white; border:none; border-radius:6px; padding:8px 14px; font:12px 'Microsoft YaHei';}"
         "QPushButton:hover{background:#66B1FF;}"
-        "QHeaderView::section{background:#F2F6FC; padding:6px; border:none; border-bottom:1px solid #EBEEF5;}"
+        "QHeaderView::section{background:rgba(242,246,252,0.86); padding:7px; border:none; border-bottom:1px solid rgba(235,238,245,0.85);}"
         );
 
     QVBoxLayout* root = new QVBoxLayout(this);
@@ -271,7 +292,7 @@ void AnalyticsWindow::buildUi()
     root->setSpacing(12);
 
     QLabel* titleLabel = new QLabel(QString::fromUtf8("作者统计 / 年度热点分析"));
-    titleLabel->setStyleSheet("font:700 22px 'Microsoft YaHei'; color:#303133; background:transparent;");
+    titleLabel->setObjectName("AnalyticsTitle");
 
     m_tabs = new QTabWidget(this);
 
@@ -295,6 +316,7 @@ void AnalyticsWindow::buildUi()
     m_authorTable->setSortingEnabled(true);
     m_authorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_authorTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_authorTable->setAlternatingRowColors(true);
 
     m_authorBarChart = new BarChartWidget(this);
     QSplitter* authorSplitter = new QSplitter(Qt::Vertical, this);
@@ -335,6 +357,7 @@ void AnalyticsWindow::buildUi()
     m_keywordTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_keywordTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_keywordTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_keywordTable->setAlternatingRowColors(true);
 
     m_keywordBarChart = new BarChartWidget(this);
     m_trendChart = new TrendChartWidget(this);
@@ -356,6 +379,26 @@ void AnalyticsWindow::buildUi()
 
     root->addWidget(titleLabel);
     root->addWidget(m_tabs, 1);
+
+    m_loadingOverlay = new QWidget(this);
+    m_loadingOverlay->setAttribute(Qt::WA_StyledBackground, true);
+    m_loadingOverlay->setStyleSheet("background-color: rgba(255, 255, 255, 0.24); border-radius: 12px;");
+    m_loadingOverlay->hide();
+
+    QVBoxLayout* overlayLayout = new QVBoxLayout(m_loadingOverlay);
+    overlayLayout->setContentsMargins(24, 24, 24, 24);
+    overlayLayout->addStretch();
+    m_loadingLabel = new QLabel(QString::fromUtf8("正在加载分析数据..."), m_loadingOverlay);
+    m_loadingLabel->setAlignment(Qt::AlignCenter);
+    m_loadingLabel->setStyleSheet(
+        "background-color: rgba(255,255,255,0.86);"
+        "color: #1F2D3D;"
+        "font: 600 15px 'Microsoft YaHei';"
+        "padding: 16px 28px;"
+        "border-radius: 12px;"
+        "border: 1px solid rgba(255,255,255,0.4);");
+    overlayLayout->addWidget(m_loadingLabel, 0, Qt::AlignCenter);
+    overlayLayout->addStretch();
 
     connect(authorSearchButton, &QPushButton::clicked, this, &AnalyticsWindow::applyAuthorFilter);
     connect(m_authorSearchEdit, &QLineEdit::returnPressed, this, &AnalyticsWindow::applyAuthorFilter);
@@ -379,6 +422,52 @@ bool AnalyticsWindow::initializeData()
     refreshHotKeywords();
     refreshTrends();
     return true;
+}
+
+void AnalyticsWindow::initializeDataAsync()
+{
+    if (m_initThread) {
+        return;
+    }
+
+    m_initThread = QThread::create([this]() {
+        const bool ok = m_service.ensureAnalytics();
+        const QString error = m_service.lastError();
+        QMetaObject::invokeMethod(this, [this, ok, error]() {
+            m_initThread = nullptr;
+            setLoadingState(false);
+            if (!ok) {
+                QMessageBox::warning(this, QString::fromUtf8("数据不可用"), error);
+                return;
+            }
+
+            populateAuthorTable(m_service.topAuthors());
+            populateYearList();
+            refreshHotKeywords();
+            refreshTrends();
+        }, Qt::QueuedConnection);
+    });
+
+    connect(m_initThread, &QThread::finished, m_initThread, &QObject::deleteLater);
+    m_initThread->start();
+}
+
+void AnalyticsWindow::setLoadingState(bool loading, const QString& message)
+{
+    if (m_loadingOverlay) {
+        m_loadingOverlay->setGeometry(rect().adjusted(18, 62, -18, -18));
+        if (!message.isEmpty() && m_loadingLabel) {
+            m_loadingLabel->setText(message);
+        }
+        m_loadingOverlay->setVisible(loading);
+        if (loading) {
+            m_loadingOverlay->raise();
+        }
+    }
+
+    if (m_tabs) {
+        m_tabs->setEnabled(!loading);
+    }
 }
 
 void AnalyticsWindow::populateAuthorTable(const QVector<AuthorStat>& authors)
@@ -428,7 +517,7 @@ void AnalyticsWindow::populateYearList()
     }
 
     const int latestYear = years.last();
-    const int preferredLatestYear = std::min(2026, latestYear);
+    const int preferredLatestYear = std::min(2025, latestYear);
     const int recentThreshold = preferredLatestYear - 4;
     for (auto it = years.crbegin(); it != years.crend(); ++it) {
         const int year = *it;
@@ -438,7 +527,7 @@ void AnalyticsWindow::populateYearList()
         item->setCheckState((year >= recentThreshold && year <= preferredLatestYear) ? Qt::Checked : Qt::Unchecked);
     }
 
-    int defaultIndex = m_yearCombo->findData(2026);
+    int defaultIndex = m_yearCombo->findData(2025);
     if (defaultIndex < 0) {
         defaultIndex = m_yearCombo->count() - 1;
     }
@@ -482,4 +571,12 @@ void AnalyticsWindow::refreshTrends()
     }
     std::sort(selectedYears.begin(), selectedYears.end());
     m_trendChart->setData(m_service.keywordTrends(selectedYears));
+}
+
+void AnalyticsWindow::resizeEvent(QResizeEvent* event)
+{
+    QDialog::resizeEvent(event);
+    if (m_loadingOverlay && m_loadingOverlay->isVisible()) {
+        m_loadingOverlay->setGeometry(rect().adjusted(18, 62, -18, -18));
+    }
 }

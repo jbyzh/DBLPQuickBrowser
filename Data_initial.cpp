@@ -2,6 +2,18 @@
 #include "Data_initial.h"
 //#define DEBUGING
 
+namespace {
+class NullBuffer : public std::streambuf {
+public:
+    int overflow(int c) override { return c; }
+};
+
+NullBuffer g_nullBuffer;
+std::ostream g_nullStream(&g_nullBuffer);
+}
+
+#define cout g_nullStream
+
 namespace data_initial {
 const int MAX_NUM = 4096;//HASH最大值(修改需同步Hash4函数)
 std::atomic<long long> total_num = 0; // 初始化总记录数
@@ -390,20 +402,10 @@ bool initial_readers(DWORD Max_thread, DWORD TOTAL_THREAD, bool File_check, char
 
     // 创建目录（QT下兼容system命令）
     string paths = "mkdir \"" + _FileUrl_All + "database\\author\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
-    paths = "mkdir \"" + _FileUrl_All + "database\\article\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
-    paths = "mkdir \"" + _FileUrl_All + "database\\year\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
+    _mkdir((_FileUrl_All + "database").c_str());
+    _mkdir((_FileUrl_All + "database\\author").c_str());
+    _mkdir((_FileUrl_All + "database\\article").c_str());
+    _mkdir((_FileUrl_All + "database\\year").c_str());
 
     thread* readers[16] = { nullptr };
     fstream* infile = new fstream[Max_thread];

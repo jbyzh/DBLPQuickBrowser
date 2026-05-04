@@ -3,6 +3,8 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QMetaObject>
+#include <QTimer>
 #include <iostream>
 
 using namespace data_initial;
@@ -17,6 +19,15 @@ XmlParser::XmlParser(QObject *parent)
     SetConsoleCP(CP_ACP);
     std::ios::sync_with_stdio(true);
     std::cout.imbue(std::locale(""));
+}
+
+XmlParser::~XmlParser()
+{
+    stopProgressTimer();
+    if (m_workerThread) {
+        m_workerThread->quit();
+        m_workerThread->wait();
+    }
 }
 
 void XmlParser::setParams(DWORD maxThread, DWORD totalThread, bool fileCheck, const QString &fileUrl)
@@ -35,28 +46,65 @@ bool XmlParser::isFileParsed() const
 
 void XmlParser::startParse()
 {
+    if (m_isParsing) {
+        emit parseMessage(QString::fromUtf8("解析任务正在进行中，请稍候..."));
+        return;
+    }
+
+    m_isParsing = true;
     emit parseStarted();
     emit parseMessage(QString::fromUtf8("开始解析 dblp.xml..."));
     emit parseProgress(QString::fromUtf8("初始化解析线程..."));
+    m_lastProgressValue = -1;
 
     const QString baseDir = normalizedBaseDir();
-    QByteArray baseDirBytes = QDir::toNativeSeparators(baseDir + "/").toLocal8Bit();
-    char* filePath = baseDirBytes.data();
-    bool result = false;
-
-    try {
-        result = data_initial::initial_readers(m_maxThread, m_totalThread, m_fileCheck, filePath);
-    } catch (...) {
-        emit parseMessage(QString::fromUtf8("[异常] 解析过程中出错。"));
+    if (!m_progressTimer) {
+        m_progressTimer = new QTimer(this);
+        m_progressTimer->setInterval(1000);
+        connect(m_progressTimer, &QTimer::timeout, this, [this]() {
+            const long long currentValue = data_initial::total_num.load();
+            if (currentValue == m_lastProgressValue) {
+                return;
+            }
+            m_lastProgressValue = currentValue;
+            emit parseProgress(QString::fromUtf8("已解析记录数：%1").arg(currentValue));
+        });
     }
+    m_progressTimer->start();
 
-    emit parseFinished(result);
+    const DWORD maxThread = m_maxThread;
+    const DWORD totalThread = m_totalThread;
+    const bool fileCheck = m_fileCheck;
+    const QByteArray baseDirBytes = QDir::toNativeSeparators(baseDir + "/").toLocal8Bit();
 
-    if (result) {
-        emit parseMessage(QString::fromUtf8("解析成功，结果已保存到：") + QDir(baseDir).filePath("database"));
-    } else {
-        emit parseMessage(QString::fromUtf8("解析失败。"));
-    }
+    m_workerThread = QThread::create([this, maxThread, totalThread, fileCheck, baseDir, baseDirBytes]() {
+        bool result = false;
+        try {
+            result = data_initial::initial_readers(maxThread, totalThread, fileCheck, const_cast<char*>(baseDirBytes.constData()));
+        } catch (...) {
+            QMetaObject::invokeMethod(this, [this]() {
+                emit parseMessage(QString::fromUtf8("[异常] 解析过程中出错。"));
+            }, Qt::QueuedConnection);
+        }
+
+        QMetaObject::invokeMethod(this, [this, result, baseDir]() {
+            stopProgressTimer();
+            m_isParsing = false;
+            emit parseFinished(result);
+
+            if (result) {
+                emit parseMessage(QString::fromUtf8("解析成功，结果已保存到：") + QDir(baseDir).filePath("database"));
+            } else {
+                emit parseMessage(QString::fromUtf8("解析失败。"));
+            }
+
+            if (m_workerThread) {
+                m_workerThread->deleteLater();
+                m_workerThread = nullptr;
+            }
+        }, Qt::QueuedConnection);
+    });
+    m_workerThread->start();
 }
 
 QString XmlParser::normalizedBaseDir() const
@@ -69,4 +117,11 @@ QString XmlParser::normalizedBaseDir() const
         return info.absoluteFilePath();
     }
     return QDir::cleanPath(m_fileUrl);
+}
+
+void XmlParser::stopProgressTimer()
+{
+    if (m_progressTimer && m_progressTimer->isActive()) {
+        m_progressTimer->stop();
+    }
 }

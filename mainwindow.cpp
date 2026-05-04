@@ -152,6 +152,10 @@ MainWindow::MainWindow(QWidget *parent)
         m_logText->append(QString::fromUtf8("[信息] ") + msg);
     });
 
+    connect(m_parser, &XmlParser::parseProgress, this, [this](const QString& msg) {
+        m_statusLabel->setText(QString::fromUtf8("状态：解析中 - ") + msg);
+    });
+
     connect(m_parser, &XmlParser::parseStarted, this, [this, enterBtn]() {
         m_parseBtn->setEnabled(false);
         enterBtn->setEnabled(false);

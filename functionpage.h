@@ -6,6 +6,7 @@
 #include <QWidget>
 
 class AnalyticsWindow;
+class IntervalWindow;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,6 +35,7 @@ private slots:
 private:
     Ui::FunctionPage *ui;
     QPointer<AnalyticsWindow> m_analyticsWindow;
+    QPointer<IntervalWindow> m_intervalWindow;
     QString m_dataPath;
 };
 

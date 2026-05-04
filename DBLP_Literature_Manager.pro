@@ -12,6 +12,8 @@ SOURCES += \
     analytics.cpp \
     analyticswindow.cpp \
     Data_initial.cpp \
+    intervalanalysis.cpp \
+    intervalwindow.cpp \
     XmlParser.cpp \
     functionpage.cpp \
     main.cpp \
@@ -22,6 +24,8 @@ HEADERS += \
     analytics.h \
     analyticswindow.h \
     Data_initial.h \
+    intervalanalysis.h \
+    intervalwindow.h \
     Universal_headers.h \
     User_Define_Using.h \
     XmlParser.h \
