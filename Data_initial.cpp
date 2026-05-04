@@ -1,6 +1,19 @@
 #define Data_initial_EXPORTS
 #include "Data_initial.h"
+#include "GraphManager.h"
 //#define DEBUGING
+
+namespace {
+class NullBuffer : public std::streambuf {
+public:
+    int overflow(int c) override { return c; }
+};
+
+NullBuffer g_nullBuffer;
+std::ostream g_nullStream(&g_nullBuffer);
+}
+
+#define cout g_nullStream
 
 namespace data_initial {
 const int MAX_NUM = 4096;//HASH最大值(修改需同步Hash4函数)
@@ -81,7 +94,7 @@ inline void push_author(string content, DWORD num) {
 
 inline DWORD Hash4(const string& tar) {
     DWORD64 ans = 0;
-    for (int i = 0; i < tar.length(); i++) {
+    for (size_t i = 0; i < tar.length(); i++) {
         ans = ((ans >> 8) & 0xf) ^ ((ans << 4) ^ tar[i]);
     }
     return ans & 0xfff;
@@ -106,7 +119,7 @@ inline void Create_article(string name, DWORD flag, vector<string>& author, DWOR
         total_num++;
         return;
     }
-    for (int i = 0; i < author.size(); i++)auth[ID].push_back(author[i]);
+    for (size_t i = 0; i < author.size(); i++)auth[ID].push_back(author[i]);
     DWORD nh = Hash4(name);
     push_wz(name + " <-> " + to_string(flag), nh);
     push_year(name, years);
@@ -114,6 +127,7 @@ inline void Create_article(string name, DWORD flag, vector<string>& author, DWOR
     for (auto& a : author) {
         push_author(name + "$" + to_string(flag) + "#" + a, Hash4(a));
     }
+    GraphManager::instance().addAuthorsFromArticle(author);
     author.clear();
     total_num++;
     return;
@@ -131,7 +145,7 @@ inline DWORD Write_Record(fstream& iner, DWORD flag, string& tar, DWORD ID) { //
     vector<string> author; // 作者向量
     string name = ""; // 文章名称
     author.clear(); // 清空作者向量
-    DWORD err_protection = 0; // 数据格式异常保护（记录错误位置）
+    [[maybe_unused]] DWORD err_protection = 0; // 数据格式异常保护（记录错误位置）
     while (gotchar(iner, ID, tmpc)) { // 循环读取字符
         if (tmpc == '<') { // 遇到开始标签
             tmp = "<"; // 初始化临时字符串
@@ -293,7 +307,7 @@ inline void do_writer() {
     }
 
     for (int i = 1; i < 16; i++) {
-        for (int j = 0; j < auth[i].size(); j++) {
+        for (size_t j = 0; j < auth[i].size(); j++) {
             auth[0].push_back(auth[i][j]);
         }
         auth[i].clear();
@@ -303,7 +317,7 @@ inline void do_writer() {
     if (!auth[0].empty()) {
         string tmpau = auth[0][0];
         int tot = 0;
-        for (int i = 0; i < auth[0].size(); i++) {
+        for (size_t i = 0; i < auth[0].size(); i++) {
             if (auth[0][i] != tmpau) {
                 allauthor << tot << " " << tmpau << endl;
                 tmpau = auth[0][i];
@@ -390,25 +404,15 @@ bool initial_readers(DWORD Max_thread, DWORD TOTAL_THREAD, bool File_check, char
 
     // 创建目录（QT下兼容system命令）
     string paths = "mkdir \"" + _FileUrl_All + "database\\author\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
-    paths = "mkdir \"" + _FileUrl_All + "database\\article\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
-    paths = "mkdir \"" + _FileUrl_All + "database\\year\" 2>nul";
-    system(paths.c_str());
-#ifdef DEBUGING
-    cout << paths << endl;
-#endif
+    _mkdir((_FileUrl_All + "database").c_str());
+    _mkdir((_FileUrl_All + "database\\author").c_str());
+    _mkdir((_FileUrl_All + "database\\article").c_str());
+    _mkdir((_FileUrl_All + "database\\year").c_str());
 
     thread* readers[16] = { nullptr };
     fstream* infile = new fstream[Max_thread];
     string xmlPath = _FileUrl_All + "dblp.xml";
-    for (int i = 0; i < Max_thread; i++) {
+    for (DWORD i = 0; i < Max_thread; i++) {
         infile[i].open(xmlPath, ios::in);
         if (!infile[i]) {
             cout << "文件" << i << "无法打开：" << xmlPath << endl;
@@ -451,7 +455,7 @@ bool initial_readers(DWORD Max_thread, DWORD TOTAL_THREAD, bool File_check, char
     cout << u8"需要创建的线程数:" << Max_thread << endl;
 #endif
 
-    for (int i = 0; i < Max_thread - 1; i++) {
+    for (DWORD i = 0; i < Max_thread - 1; i++) {
 #ifdef DEBUGING
         cout << u8"正在创建线程" << i << endl;
 #endif
@@ -466,7 +470,7 @@ bool initial_readers(DWORD Max_thread, DWORD TOTAL_THREAD, bool File_check, char
 #ifdef DEBUGING
                 cout << u8"已创建线程" << i << endl;
 #endif
-                while (alive_thread_initial >= TOTAL_THREAD) {
+                while (alive_thread_initial >= static_cast<int>(TOTAL_THREAD)) {
                     if (!sys_writing)cout << u8"已读取:" << total_num << endl;
                     else cout << u8"写入中:" << total_num << endl;
                     Sleep(1000);
@@ -508,7 +512,7 @@ bool initial_readers(DWORD Max_thread, DWORD TOTAL_THREAD, bool File_check, char
     finishes.close();
 
     // 释放资源
-    for (int i = 0; i < Max_thread; i++) {
+    for (DWORD i = 0; i < Max_thread; i++) {
         if (readers[i] != nullptr) {
             readers[i]->join();
             delete readers[i];

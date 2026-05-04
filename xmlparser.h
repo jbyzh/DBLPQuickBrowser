@@ -1,40 +1,44 @@
-#ifndef XMLPARSER_H
+﻿#ifndef XMLPARSER_H
 #define XMLPARSER_H
 
 #include <QObject>
 #include <QString>
-#include <QProcess>
+#include <QThread>
+#include <QTimer>
 #include <windows.h>
-// 引入你的解析器头文件
+
 #include "Data_initial.h"
 
 class XmlParser : public QObject
 {
     Q_OBJECT
+
 public:
     explicit XmlParser(QObject *parent = nullptr);
+    ~XmlParser();
 
-    // 设置解析参数
-    void setParams(DWORD maxThread = 4, DWORD totalThread = 8, bool fileCheck = true, const QString& fileUrl = "");
-    // 检查文件是否已解析（通过finish.db标记判断）
+    void setParams(DWORD maxThread = 4, DWORD totalThread = 8, bool fileCheck = true, const QString& fileUrl = QString());
     bool isFileParsed() const;
-    // 执行解析（调用你的initial_readers）
     void startParse();
-    // 打开指定目录
-    //void openDirectory(const QString& path);
 
 signals:
-    // 解析状态信号（供UI更新）
-    void parseStarted();                  // 解析开始
-    void parseProgress(const QString& msg); // 进度消息（如已读取条数）
-    void parseFinished(bool success);     // 解析完成
-    void parseMessage(const QString& msg); // 通用日志消息
+    void parseStarted();
+    void parseProgress(const QString& msg);
+    void parseFinished(bool success);
+    void parseMessage(const QString& msg);
 
 private:
-    DWORD m_maxThread;    // 最大线程数
-    DWORD m_totalThread;  // 总线程数
-    bool m_fileCheck;     // 文件检查标记
-    QString m_fileUrl;    // XML文件目录
+    QString normalizedBaseDir() const;
+    void stopProgressTimer();
+
+    DWORD m_maxThread;
+    DWORD m_totalThread;
+    bool m_fileCheck;
+    QString m_fileUrl;
+    bool m_isParsing = false;
+    QThread* m_workerThread = nullptr;
+    QTimer* m_progressTimer = nullptr;
+    long long m_lastProgressValue = -1;
 };
 
 #endif // XMLPARSER_H

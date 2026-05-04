@@ -1,16 +1,15 @@
-#ifndef MAINWINDOW_H
+ï»¿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QProgressBar>
+#include <QPushButton>
+#include <QTextEdit>
+
+#include "functionpage.h"
 #include "XmlParser.h"
-#include "FunctionPage.h"
 
 class MainWindow : public QMainWindow
 {
@@ -20,21 +19,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    // ########## ¹Ø¼üÐÞ¸Ä£ºÉ¾³ýÒÔÏÂÈßÓàµÄ²Ûº¯ÊýÉùÃ÷ ##########
-    // private slots:
-    //     void onParseBtnClicked();
-    //     void onParseStarted();
-    //     void onParseFinished(bool success);
-    //     void onParseMessage(const QString& msg);
-
 private:
     XmlParser* m_parser;
-    FunctionPage* m_functionPage; // ¹¦ÄÜÒ³Ãæ
+    FunctionPage* m_functionPage;
 
-    // UI¿Ø¼þ
     QLineEdit* m_pathEdit;
     QPushButton* m_parseBtn;
-    QPushButton* m_funcBtn;
     QTextEdit* m_logText;
     QProgressBar* m_progressBar;
     QLabel* m_statusLabel;
