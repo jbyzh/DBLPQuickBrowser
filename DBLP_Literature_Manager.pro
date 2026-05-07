@@ -1,4 +1,4 @@
-QT       += core gui charts
+QT       += core gui charts concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,17 +14,22 @@ SOURCES += \
     algorithm.cpp \
     analytics.cpp \
     analyticswindow.cpp \
+    authorindexgraphcache.cpp \
     barchart.cpp \
     clique.cpp \
     cliqueanalyse.cpp \
     CliqueTools.cpp \
     collaborationgraph.cpp \
+    cooperationnet.cpp \
     Data_initial.cpp \
     DegeneracyAlgorithm.cpp \
     DegeneracyTools.cpp \
+    fuzzysearchdialog.cpp \
     intervalanalysis.cpp \
     intervalwindow.cpp \
     memorymanager.cpp \
+    search.cpp \
+    searchdialog.cpp \
     XmlParser.cpp \
     functionpage.cpp \
     main.cpp \
@@ -41,14 +46,19 @@ HEADERS += \
     Tools.h \
     analytics.h \
     analyticswindow.h \
+    authorindexgraphcache.h \
     barchart.h \
     clique.h \
     cliqueanalyse.h \
     cliquetools.h \
     collaborationgraph.h \
+    cooperationnet.h \
     Data_initial.h \
+    fuzzysearchdialog.h \
     intervalanalysis.h \
     intervalwindow.h \
+    search.h \
+    searchdialog.h \
     Universal_headers.h \
     User_Define_Using.h \
     XmlParser.h \

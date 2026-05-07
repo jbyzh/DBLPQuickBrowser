@@ -55,6 +55,7 @@ bool CliqueTools::IsMaximalClique(vector<vector<int>> &adjacencyArray, list<int>
 
 bool CliqueTools::IsClique(vector<vector<char>> &adjacencyMatrix, list<int> const&clique, bool const verbose)
 {
+    (void)verbose;
     for (int const vertex : clique) {
         for (int const otherVertex : clique) {
             if (vertex == otherVertex) continue;
