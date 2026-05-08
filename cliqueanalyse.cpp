@@ -216,6 +216,7 @@ void CliqueAnalyse::analyzeCliquesWithAlgorithm()
     long long totalCliqueCount = 0;
     int maxCliqueSize = 0;
     int totalAuthors = graph->getNodeCount();
+    int totalEdges = graph->getEdgeCount();
     
     emit progressUpdated(40);
     
@@ -232,17 +233,10 @@ void CliqueAnalyse::analyzeCliquesWithAlgorithm()
             maximalCliqueCounts[1]++;
             totalCliqueCount++;
             if (maxCliqueSize < 1) maxCliqueSize = 1;
-            QString countStr = calculateCombinationScientific(1, 1);
-            allCliqueCountsScientific[1] = addScientificStrings(allCliqueCountsScientific[1], countStr);
         } else if (componentSize == 2) {
             maximalCliqueCounts[2]++;
             totalCliqueCount++;
             if (maxCliqueSize < 2) maxCliqueSize = 2;
-            
-            for (int k = 1; k <= 2; ++k) {
-                QString countStr = calculateCombinationScientific(2, k);
-                allCliqueCountsScientific[k] = addScientificStrings(allCliqueCountsScientific[k], countStr);
-            }
         } else if (componentSize >= 3) {
             // 构建邻接表，用于 DegeneracyAlgorithm
             std::map<int, int> globalToLocal;
@@ -277,7 +271,7 @@ void CliqueAnalyse::analyzeCliquesWithAlgorithm()
                     maxCliqueSize = cliqueSize;
                 }
                 
-                for (int k = 1; k <= cliqueSize; ++k) {
+                for (int k = 3; k <= cliqueSize; ++k) {
                     QString countStr = calculateCombinationScientific(cliqueSize, k);
                     allCliqueCountsScientific[k] = addScientificStrings(allCliqueCountsScientific[k], countStr);
                 }
@@ -310,7 +304,7 @@ void CliqueAnalyse::analyzeCliquesWithAlgorithm()
     
     std::vector<QString> allCliqueCountsStr;
     allCliqueCountsStr.resize(actualMax + 1, "0");
-    for (int i = 1; i <= actualMax; i++) {
+    for (int i = 3; i <= actualMax; i++) {
         QString val = allCliqueCountsScientific[i];
         if (val.isEmpty()) val = "0";
         allCliqueCountsStr[i] = val;
