@@ -304,6 +304,11 @@ void CliqueAnalyse::analyzeCliquesWithAlgorithm()
     
     std::vector<QString> allCliqueCountsStr;
     allCliqueCountsStr.resize(actualMax + 1, "0");
+
+    allCliqueCountsStr[1] = QString::number(totalAuthors);
+    
+    allCliqueCountsStr[2] = QString::number(totalEdges);
+    
     for (int i = 3; i <= actualMax; i++) {
         QString val = allCliqueCountsScientific[i];
         if (val.isEmpty()) val = "0";
