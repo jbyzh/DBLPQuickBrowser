@@ -136,7 +136,7 @@
             </font>
            </property>
            <property name="text">
-            <string>聚团总数：</string>
+            <string>极大团总数：</string>
            </property>
           </widget>
          </item>
