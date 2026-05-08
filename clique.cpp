@@ -134,7 +134,7 @@ void Clique::on_pushButton_clicked()
     ui->tableWidget_2->setRowCount(0);
     ui->tableWidget->setRowCount(0);
     ui->label_2->setText("总作者数：等待中...");
-    ui->label_3->setText("聚团总数：等待中...");
+    ui->label_3->setText("极大团总数：等待中...");
     // ui->label_4->setText("作者数>2的聚团数量：等待中...");
     ui->label_5->setText("最大聚团阶数：等待中...");
 
@@ -164,7 +164,7 @@ void Clique::updateAnalysisResults(const std::vector<long long>& cliqueCounts, i
         // m_componentSizeDistribution = componentSizeDistribution; // tableWidget_2已移除
         
         ui->label_2->setText(QString("总作者数：%1").arg(totalAuthors));
-        ui->label_3->setText(QString("聚团总数：%1").arg(totalCliqueCount));
+        ui->label_3->setText(QString("极大团总数：%1").arg(totalCliqueCount));
         ui->label_5->setText(QString("最大聚团阶数：%1").arg(maxCliqueSize));
 
         // tableView_2：显示极大团数量
