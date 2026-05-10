@@ -93,6 +93,9 @@ void SearchDialog::buildUi()
     root->addWidget(m_resultList, 1);
 
     QHBoxLayout* pager = new QHBoxLayout();
+    m_resultCountLabel = new QLabel(QString::fromUtf8("共 0 条结果"), this);
+    pager->addWidget(m_resultCountLabel);
+    pager->addSpacing(14);
     m_pageLabel = new QLabel(QString::fromUtf8("第 0 / 0 页"), this);
     pager->addWidget(m_pageLabel);
     pager->addStretch(1);
@@ -128,6 +131,10 @@ void SearchDialog::executeSearch()
         m_results = m_searcher.searchByTitle(keyword);
     }
 
+    for (search_module::SearchResult& result : m_results) {
+        m_searcher.readPaperDetails(result);
+    }
+
     m_currentPage = 0;
     updatePage();
 }
@@ -135,6 +142,10 @@ void SearchDialog::executeSearch()
 void SearchDialog::updatePage()
 {
     m_resultList->clear();
+
+    if (m_resultCountLabel) {
+        m_resultCountLabel->setText(QString::fromUtf8("共 %1 条结果").arg(m_results.size()));
+    }
 
     const int totalPages = m_results.isEmpty() ? 0 : ((m_results.size() + m_itemsPerPage - 1) / m_itemsPerPage);
     const int start = m_currentPage * m_itemsPerPage;

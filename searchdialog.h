@@ -40,6 +40,7 @@ private:
     QComboBox* m_modeCombo = nullptr;
     QLineEdit* m_searchEdit = nullptr;
     QListWidget* m_resultList = nullptr;
+    QLabel* m_resultCountLabel = nullptr;
     QLabel* m_pageLabel = nullptr;
     QPushButton* m_prevButton = nullptr;
     QPushButton* m_nextButton = nullptr;
